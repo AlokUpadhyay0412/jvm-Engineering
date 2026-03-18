@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products | JVM Engineering Works</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #b30000;
+            --dark-blue: #004a99;
+            --navy-deep: #0a192f;
+            --whatsapp-green: #25D366;
+            --bg-gray: #f4f7f6;
+            --text-main: #333;
+            --card-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --footer-bg: #0a192f;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-gray);
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('src/yus.jpg') center/cover no-repeat;
+            padding: 100px 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+
+        /* Intro Text Section */
+        .intro-section {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 60px;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* Product Card Layout */
+        .product-card {
+            background: #fff;
+            border-radius: 12px;
+            display: flex;
+            margin-bottom: 40px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+            flex-wrap: wrap;
+        }
+
+        .product-card:hover { transform: translateY(-5px); }
+
+        .img-box {
+            flex: 0 0 380px;
+            min-height: 280px;
+            background: #eee;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.5s;
+        }
+
+        .img-box:hover img { transform: scale(1.05); opacity: 0.8; }
+        .img-box::after {
+            content: "VIEW TECHNICAL SPECS";
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: white; font-weight: 700; font-size: 11px;
+            background: rgba(179,0,0,0.8);
+            padding: 8px 15px; border-radius: 5px; opacity: 0;
+            transition: 0.3s; letter-spacing: 1px; white-space: nowrap;
+        }
+        .img-box:hover::after { opacity: 1; }
+
+        .content-box { flex: 1; padding: 30px; min-width: 320px; position: relative; display: flex; flex-direction: column; }
+
+        .price-tag { font-size: 22px; font-weight: 700; color: var(--primary-red); margin: 10px 0; }
+
+        /* Specs Grid */
+        .spec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 15px;
+            font-size: 13px;
+            margin: 20px 0;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--dark-blue);
+        }
+
+        .spec-item b { color: #555; text-transform: uppercase; font-size: 11px; display: block; }
+
+        /* Action Buttons */
+        .card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .btn-action {
+            text-decoration: none;
+            text-align: center;
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-wa { background: var(--whatsapp-green); }
+        .btn-wa:hover { background: #1eb956; transform: translateY(-2px); }
+        .btn-mail { background: var(--dark-blue); }
+        .btn-mail:hover { background: #003366; transform: translateY(-2px); }
+
+        .btn-main {
+            background: #eee;
+            color: #333;
+            padding: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-radius: 5px;
+            transition: 0.3s;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        /* --- MODERN MODAL UI --- */
+        .modal {
+            display: none; position: fixed; z-index: 10000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: #fff; border-radius: 12px; max-width: 600px; width: 95%;
+            position: relative; overflow: hidden; animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .modal-header { background: var(--dark-blue); color: white; padding: 20px; }
+        .modal-body { padding: 25px; }
+
+        .details-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+        .details-table td { padding: 12px; border-bottom: 1px solid #eee; }
+        .details-table td:first-child { font-weight: 700; color: #888; text-transform: uppercase; font-size: 10px; width: 40%; }
+
+        .close { position: absolute; top: 15px; right: 20px; font-size: 25px; color: white; cursor: pointer; z-index: 11; }
+
+        /* --- FOOTER STYLES --- */
+        .main-footer {
+            background: var(--footer-bg);
+            color: #ecf0f1;
+            padding: 60px 0 20px;
+            margin-top: 80px;
+        }
+
+        .footer-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            padding: 0 20px;
+        }
+
+        .footer-col h4 {
+            color: #fff;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--primary-red);
+        }
+
+        .footer-col p { font-size: 14px; line-height: 1.8; color: #bdc3c7; }
+
+        .footer-links { list-style: none; padding: 0; }
+        .footer-links li { margin-bottom: 12px; }
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .footer-links a:hover { color: var(--primary-red); padding-left: 5px; }
+
+        .contact-info li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #bdc3c7;
+            list-style: none;
+        }
+        .contact-info i { color: var(--primary-red); width: 20px; }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 768px) {
+            .img-box { flex: 0 0 100%; }
+            .card-actions { grid-template-columns: 1fr; }
+            .footer-grid { text-align: center; }
+            .footer-col h4::after { left: 50%; transform: translateX(-50%); }
+            .contact-info li { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="hero">
+    <h1>JVM ENGINEERING WORKS</h1>
+    <p>Premium Shipping Containers</p>
+</header>
+
+<div class="container">
+
+    <section class="intro-section">
+        <h2 style="color: var(--dark-blue);">Shipping Container Solutions</h2>
+        <p>Discover the strength and durability of our Shipping Container, the perfect solution for all your shipping needs. As a manufacturer, supplier, and fabricator with over 4 years of experience, we offer a range of products including 20ft Shipping Containers, Prefabricated Raw Containers, and Shipping Office Containers.</p>
+    </section>
+
+    <div class="product-card">
+        <div class="img-box" onclick="showModal('Prefabricated Raw Container', '₹2,45,000 / Piece', [
+            ['Dimensions (L*W*H)', '20ft x 10ft x 8.6ft'],
+            ['Floor Loading', 'Heavy Duty Ply - Long Ton'],
+            ['Material', 'Corten Steel / Mild Steel'],
+            ['Supply Ability', '10-15 Units Per Day'],
+            ['Delivery Time', '6-7 Working Days'],
+            ['Structure', 'Fully Welded Reinforced Steel Frame']
+        ])">
+            <img src="src/prefabricated%20aw.jpg" alt="Prefabricated Raw Container">
+        </div>
+        <div class="content-box">
+            <h3 style="color: var(--dark-blue);">Prefabricated Raw Container</h3>
+            <div class="price-tag">₹2,45,000 / Piece</div>
+            <div class="spec-grid">
+                <div class="spec-item"><b>Dimensions (L*W*H)</b>20ft x 10ft x 8.6ft</div>
+                <div class="spec-item"><b>Floor Load</b>Ply Long Ton</div>
+                <div class="spec-item"><b>Material</b>Steel</div>
+                <div class="spec-item"><b>Supply Ability</b>10-15 Per Day</div>
+                <div class="spec-item"><b>Delivery Time</b>6-7 Days</div>
+                <div class="spec-item"><b>Color</b>As per require</div>
+            </div>
+            <div class="card-actions">
+                <a href="https://wa.me/918130761373?text=I am interested in the Prefabricated Raw Container" target="_blank" class="btn-action btn-wa">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=juhiyadav@jvmengineeringworks.in&su=Inquiry:+Prefabricated+Raw+Container" target="_blank" class="btn-action btn-mail">
+                    <i class="fas fa-envelope"></i> Email Quote
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <div class="img-box" onclick="showModal('20ft. Shipping Container', '₹2,10,000 / Piece', [
+            ['Height', '10 Foot'],
+            ['Length', '20 Foot'],
+            ['Material', 'High-Grade Steel'],
+            ['Use', 'Cargo Shipping / Storage'],
+            ['Delivery Time', '6-7 Working Days'],
+            ['Supply Ability', '100 Units Per Month']
+        ])">
+            <img src="src/ShippingContainer.jpg" alt="20ft Shipping Container">
+        </div>
+        <div class="content-box">
+            <h3 style="color: var(--dark-blue);">20ft. Shipping Container</h3>
+            <div class="price-tag">₹2,10,000 / Piece</div>
+            <div class="spec-grid">
+                <div class="spec-item"><b>Height</b>10 Foot</div>
+                <div class="spec-item"><b>Length</b>20 Foot</div>
+                <div class="spec-item"><b>Material</b>Steel</div>
+                <div class="spec-item"><b>Use</b>Shipping</div>
+                <div class="spec-item"><b>Delivery Time</b>6-7 Days</div>
+                <div class="spec-item"><b>Supply Ability</b>10-15 Per Day</div>
+            </div>
+            <div class="card-actions">
+                <a href="https://wa.me/918130761373?text=I am interested in the 20ft Shipping Container" target="_blank" class="btn-action btn-wa">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=juhiyadav@jvmengineeringworks.in&su=Inquiry:+20ft+Shipping+Container" target="_blank" class="btn-action btn-mail">
+                    <i class="fas fa-envelope"></i> Email Quote
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <div class="img-box" onclick="showModal('Shipping Office Container', '₹2,10,000 / Piece', [
+            ['Height', '8 Foot'],
+            ['Length', '20 Foot'],
+            ['Material', 'Insulated Steel'],
+            ['Use', 'Commercial / Site Office'],
+            ['Supply Ability', '10 Units Per Week'],
+            ['Features', 'Pre-fitted Electricals & AC Cutouts']
+        ])">
+            <img src="src/office.jpg" alt="Shipping Office Container">
+        </div>
+        <div class="content-box">
+            <h3 style="color: var(--dark-blue);">Shipping Office Container</h3>
+            <div class="price-tag">₹2,10,000 / Piece</div>
+            <div class="spec-grid">
+                <div class="spec-item"><b>Height</b>8 Foot</div>
+                <div class="spec-item"><b>Length</b>20 Foot</div>
+                <div class="spec-item"><b>Material</b>Steel</div>
+                <div class="spec-item"><b>Use</b>Commercial</div>
+                <div class="spec-item"><b>Delivery Time</b>6-7 Days</div>
+                <div class="spec-item"><b>Supply Ability</b>10-15 Per Day</div>
+            </div>
+            <div class="card-actions">
+                <a href="https://wa.me/918130761373?text=I am interested in the Shipping Office Container" target="_blank" class="btn-action btn-wa">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=juhiyadav@jvmengineeringworks.in&su=Inquiry:+Shipping+Office+Container" target="_blank" class="btn-action btn-mail">
+                    <i class="fas fa-envelope"></i> Email Quote
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="productModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <div class="modal-header">
+            <h2 id="modalTitle" style="margin: 0; font-size: 1.2rem;"></h2>
+        </div>
+        <div class="modal-body">
+            <div id="modalPrice" class="price-tag" style="margin-bottom: 20px;"></div>
+            <table class="details-table" id="modalTable"></table>
+
+            <div class="card-actions" style="margin-top: 20px;">
+                <a id="modalWa" href="#" target="_blank" class="btn-action btn-wa">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </a>
+                <a id="modalMail" href="#" target="_blank" class="btn-action btn-mail">
+                    <i class="fas fa-envelope"></i> Get Quote
+                </a>
+            </div>
+
+            <button class="btn-main" onclick="closeModal()">Close Details</button>
+        </div>
+    </div>
+</div>
+
+<footer class="main-footer">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h4>About JVM</h4>
+            <p>JVM Engineering Works is a leading manufacturer and fabricator specializing in high-quality shipping containers, portable cabins, and security solutions. With years of expertise, we deliver excellence across India.</p>
+        </div>
+
+        <div class="footer-col">
+            <h4>Quick Links</h4>
+            <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="bunkhousingcatalog.html">Bunk House Catalog</a></li>
+                <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=juhiyadav@jvmengineeringworks.in&su=Inquiry" target="_blank">Get a Quote</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Contact Details</h4>
+            <ul class="contact-info">
+                <li><i class="fas fa-map-marker-alt"></i><span><b>Office:</b> A-4, Alpha-1, Greater Noida</span></li>
+                <li><i class="fas fa-industry"></i><span><b>Yard:</b> Sector 163, Noida, UP</span></li>
+                <li><i class="fas fa-phone-alt"></i><span>+91 81307 61373</span></li>
+                <li>
+                    <i class="fas fa-envelope"></i>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=juhiyadav@jvmengineeringworks.in&su=Inquiry" target="_blank" style="color:#bdc3c7; text-decoration:none;">juhiyadav@jvmengineeringworks.in</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2026 JVM Engineering Works. All Rights Reserved.
+    </div>
+</footer>
+
+<script>
+    function showModal(title, price, specsArray) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalPrice').innerText = price;
+
+        const encodedTitle = encodeURIComponent(title);
+        document.getElementById('modalWa').href = `https://wa.me/918130761373?text=Inquiry for ${encodedTitle}`;
+        document.getElementById('modalMail').href = `https://mail.google.com/mail/?view=cm&fs=1&to=juhiyadav@jvmengineeringworks.in&su=Inquiry:+${encodedTitle}`;
+
+        const table = document.getElementById('modalTable');
+        table.innerHTML = '';
+
+        specsArray.forEach(spec => {
+            const row = `<tr><td>${spec[0]}</td><td>${spec[1]}</td></tr>`;
+            table.innerHTML += row;
+        });
+
+        document.getElementById('productModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('productModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('productModal')) {
+            closeModal();
+        }
+    }
+</script>
+
+</body>
+</html>
